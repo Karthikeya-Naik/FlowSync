@@ -9,6 +9,11 @@ const userRoutes = require('./routes/userRoutes');
 
 // Load environment variables
 dotenv.config();
+if (!process.env.MONGO_URI) {
+  throw new Error(
+    'MONGO_URI is missing in environment variables'
+  );
+}
 
 console.log('Environment Variables Loaded');
 
@@ -18,7 +23,15 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173',
+      process.env.CLIENT_URL,
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
