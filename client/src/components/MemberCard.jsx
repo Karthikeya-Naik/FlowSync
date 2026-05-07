@@ -5,6 +5,11 @@ import React, {
 import {
   Mail,
   Calendar,
+  ChevronDown,
+  ChevronUp,
+  ClipboardList,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 
 import {
@@ -127,7 +132,7 @@ const MemberCard = ({
     async () => {
       if (
         window.confirm(
-          `Delete ${user.name}?`
+          `Delete ${user.name}? This action cannot be undone.`
         )
       ) {
         setDeleting(true);
@@ -142,7 +147,7 @@ const MemberCard = ({
             response.success
           ) {
             toast.success(
-              'User deleted'
+              'User deleted successfully'
             );
 
             onDelete(
@@ -167,80 +172,76 @@ const MemberCard = ({
   // Role badge
   const getRoleBadgeColor =
     () => {
-      return user.role ===
-        'admin'
-        ? 'bg-purple-100 text-purple-700'
-        : 'bg-blue-100 text-blue-700';
+      return user.role === 'admin'
+        ? 'bg-purple-50 text-purple-700 border-purple-200'
+        : 'bg-blue-50 text-blue-700 border-blue-200';
     };
 
   const joinedDate =
     new Date(
       user.createdAt
-    ).toLocaleDateString();
+    ).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
+  const hasStats = stats && (stats.totalTasks > 0);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          {/* Avatar */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
-            {user?.name
-              ?.charAt(0)
-              ?.toUpperCase()}
-          </div>
-
-          {/* Info */}
-          <div>
-            <h3 className="font-semibold text-gray-900">
-              {user.name}
-            </h3>
-
-            <div className="flex items-center space-x-2 mt-1">
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${getRoleBadgeColor()}`}
-              >
-                {user.role ===
-                'admin'
-                  ? 'Administrator'
-                  : 'Team Member'}
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
+      <div className="p-5 flex-1 flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            {/* Avatar */}
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-sm flex-shrink-0">
+              <span className="text-blue-700 font-bold text-lg">
+                {user?.name
+                  ?.charAt(0)
+                  ?.toUpperCase()}
               </span>
+            </div>
 
-              {isCurrentUser && (
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                  You
+            {/* Info */}
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-gray-900 text-base truncate">
+                {user.name}
+              </h3>
+
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full border font-medium ${getRoleBadgeColor()}`}
+                >
+                  {user.role === 'admin'
+                    ? 'Administrator'
+                    : 'Team Member'}
                 </span>
-              )}
+
+                {isCurrentUser && (
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium border border-gray-200">
+                    You
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Admin Actions */}
-        {isAdminView &&
-          !isCurrentUser && (
-            <div className="flex space-x-1">
+          {/* Admin Actions */}
+          {isAdminView && !isCurrentUser && (
+            <div className="flex items-center gap-2 flex-shrink-0 ml-2">
               {/* Role Change */}
               <select
-                value={
-                  user.role
+                value={user.role}
+                onChange={(e) =>
+                  handleRoleChange(e.target.value)
                 }
-                onChange={(
-                  e
-                ) =>
-                  handleRoleChange(
-                    e.target
-                      .value
-                  )
-                }
-                disabled={
-                  changingRole
-                }
-                className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={changingRole}
+                className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-gray-50 hover:bg-white transition-colors cursor-pointer"
               >
                 <option value="member">
                   Member
                 </option>
-
                 <option value="admin">
                   Admin
                 </option>
@@ -248,136 +249,131 @@ const MemberCard = ({
 
               {/* Delete */}
               <button
-                onClick={
-                  handleDelete
-                }
-                disabled={
-                  deleting
-                }
-                className="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium disabled:opacity-50"
               >
-                {deleting
-                  ? '...'
-                  : 'Delete'}
+                {deleting ? '...' : 'Delete'}
               </button>
             </div>
           )}
-      </div>
-
-      {/* Contact */}
-      <div className="space-y-2 mb-4 text-sm">
-        <div className="flex items-center text-gray-500">
-          <Mail
-            size={14}
-            className="mr-2"
-          />
-
-          <span>
-            {user.email}
-          </span>
         </div>
 
-        <div className="flex items-center text-gray-500">
-          <Calendar
-            size={14}
-            className="mr-2"
-          />
+        {/* Contact Info */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-gray-500 text-sm">
+            <Mail size={14} className="mr-2 flex-shrink-0" />
+            <span className="truncate text-gray-600">
+              {user.email}
+            </span>
+          </div>
 
-          <span>
-            Joined{' '}
-            {joinedDate}
-          </span>
+          <div className="flex items-center text-gray-500 text-sm">
+            <Calendar size={14} className="mr-2 flex-shrink-0" />
+            <span className="text-gray-600">
+              Joined {joinedDate}
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* Stats Button (Admin only) */}
-      {isAdminView && user.role !== 'admin' && (
-        <button
-          onClick={
-            loadStats
-          }
-          className="w-full mb-3 text-sm text-blue-600 hover:text-blue-700 font-medium"
-        >
-          {showStats
-            ? 'Hide Stats'
-            : 'View Task Stats'}
-        </button>
-      )}
+        {/* Stats Button - Only show for non-admin users */}
+        {isAdminView && user.role !== 'admin' && (
+          <button
+            onClick={loadStats}
+            className="w-full mt-2 mb-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium py-2 rounded-lg hover:bg-blue-50 transition-all duration-200 border border-dashed border-blue-200 hover:border-blue-300"
+          >
+            {showStats ? (
+              <>
+                <ChevronUp size={16} />
+                Hide Task Stats
+              </>
+            ) : (
+              <>
+                <ChevronDown size={16} />
+                View Task Stats
+              </>
+            )}
+          </button>
+        )}
 
-      {/* Stats */}
-      {showStats && user.role !== 'admin' && (
-        <div className="border-t pt-3 space-y-3">
-          {loadingStats ? (
-            <div className="text-center text-gray-500 text-sm">
-              Loading stats...
-            </div>
-          ) : (
-            stats && (
+        {/* Stats Section - Expandable */}
+        {showStats && user.role !== 'admin' && (
+          <div className="mt-3 pt-3 border-t border-gray-100 space-y-3 animate-in slide-in-from-top-2 duration-200">
+            {loadingStats ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <span className="ml-2 text-gray-500 text-sm">Loading stats...</span>
+              </div>
+            ) : stats ? (
               <>
                 {/* Stats Grid */}
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-gray-50 rounded-lg p-2 text-center">
+                    <div className="flex justify-center mb-1">
+                      <ClipboardList size={16} className="text-gray-500" />
+                    </div>
                     <p className="text-xl font-bold text-gray-900">
-                      {stats.totalTasks ||
-                        0}
+                      {stats.totalTasks || 0}
                     </p>
-
-                    <p className="text-xs text-gray-500">
-                      Tasks
-                    </p>
+                    <p className="text-xs text-gray-500">Total Tasks</p>
                   </div>
 
-                  <div>
+                  <div className="bg-green-50 rounded-lg p-2 text-center">
+                    <div className="flex justify-center mb-1">
+                      <CheckCircle size={16} className="text-green-600" />
+                    </div>
                     <p className="text-xl font-bold text-green-600">
-                      {stats.completedTasks ||
-                        0}
+                      {stats.completedTasks || 0}
                     </p>
-
-                    <p className="text-xs text-gray-500">
-                      Completed
-                    </p>
+                    <p className="text-xs text-gray-500">Completed</p>
                   </div>
 
-                  <div>
+                  <div className="bg-red-50 rounded-lg p-2 text-center">
+                    <div className="flex justify-center mb-1">
+                      <AlertCircle size={16} className="text-red-600" />
+                    </div>
                     <p className="text-xl font-bold text-red-600">
-                      {stats.overdueTasks ||
-                        0}
+                      {stats.overdueTasks || 0}
                     </p>
-
-                    <p className="text-xs text-gray-500">
-                      Overdue
-                    </p>
+                    <p className="text-xs text-gray-500">Overdue</p>
                   </div>
                 </div>
 
-                {/* Progress */}
-                <div>
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>
-                      Completion Rate
-                    </span>
-
-                    <span>
-                      {stats.completionRate ||
-                        0}
-                      %
-                    </span>
+                {/* Progress Bar - Only show if there are tasks */}
+                {stats.totalTasks > 0 && (
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+                      <span className="font-medium">Completion Rate</span>
+                      <span className="font-semibold text-gray-700">
+                        {stats.completionRate || 0}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="bg-green-500 rounded-full h-1.5 transition-all duration-500"
+                        style={{
+                          width: `${stats.completionRate || 0}%`,
+                        }}
+                      />
+                    </div>
                   </div>
+                )}
 
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div
-                      className="bg-green-500 rounded-full h-1.5 transition-all"
-                      style={{
-                        width: `${stats.completionRate || 0}%`,
-                      }}
-                    />
+                {/* No tasks message */}
+                {stats.totalTasks === 0 && (
+                  <div className="text-center py-2">
+                    <p className="text-xs text-gray-400">No tasks assigned yet</p>
                   </div>
-                </div>
+                )}
               </>
-            )
-          )}
-        </div>
-      )}
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500">No statistics available</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

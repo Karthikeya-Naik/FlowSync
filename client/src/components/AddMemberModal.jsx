@@ -7,12 +7,14 @@ import {
   X,
   UserPlus,
   Mail,
+  UserCheck,
 } from 'lucide-react';
 
 import {
   getAllUsers,
 } from '../api/userApi';
 import { getProjects } from '../api/projectApi';
+
 const AddMemberModal = ({
   isOpen,
   onClose,
@@ -110,88 +112,112 @@ const AddMemberModal = ({
   if (!isOpen || !project)
     return null;
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[80vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              Add Members
-            </h2>
+  // Get initials for avatar
+  const getInitials = (name) => {
+    return name?.charAt(0)?.toUpperCase() || '?';
+  };
 
-            <p className="text-sm text-gray-500 mt-1">
-              {project.title}
-            </p>
+  // Get random gradient color based on name
+  const getAvatarGradient = (name) => {
+    const gradients = [
+      'from-blue-100 to-blue-200 text-blue-700',
+      'from-purple-100 to-purple-200 text-purple-700',
+      'from-green-100 to-green-200 text-green-700',
+      'from-orange-100 to-orange-200 text-orange-700',
+      'from-pink-100 to-pink-200 text-pink-700',
+      'from-indigo-100 to-indigo-200 text-indigo-700',
+    ];
+    const index = (name?.length || 0) % gradients.length;
+    return gradients[index];
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden animate-in fade-in zoom-in duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+              <UserPlus size={20} className="text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">
+                Add Members
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                {project.title}
+              </p>
+            </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all duration-200"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-5 overflow-y-auto max-h-[60vh]">
+        <div className="overflow-y-auto max-h-[60vh] p-5">
           {loading ? (
-            <div className="text-center py-10 text-gray-500">
-              Loading members...
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-500 text-sm">Loading members...</p>
             </div>
-          ) : users.length ===
-            0 ? (
-            <div className="text-center py-10">
-              <UserPlus
-                size={48}
-                className="mx-auto text-gray-300 mb-3"
-              />
-
-              <p className="text-gray-500">
+          ) : users.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <UserCheck size={32} className="text-gray-300" />
+              </div>
+              <h3 className="text-base font-semibold text-gray-900 mb-1">
                 No available members
+              </h3>
+              <p className="text-sm text-gray-500">
+                All members are already assigned to projects
               </p>
             </div>
           ) : (
             <div className="space-y-3">
+              <div className="mb-3">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Available Members ({users.length})
+                </p>
+              </div>
               {users.map(
                 (user) => (
                   <div
-                    key={
-                      user._id
-                    }
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors"
+                    key={user._id}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-all duration-200"
                   >
                     {/* User Info */}
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       {/* Avatar */}
-                      <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold">
-                          {user.name
-                            ?.charAt(
-                              0
-                            )
-                            ?.toUpperCase()}
+                      <div
+                        className={`w-10 h-10 rounded-full bg-gradient-to-br ${getAvatarGradient(
+                          user.name
+                        )} flex items-center justify-center shadow-sm flex-shrink-0`}
+                      >
+                        <span className="text-sm font-bold">
+                          {getInitials(user.name)}
                         </span>
                       </div>
 
                       {/* Details */}
-                      <div>
-                        <h3 className="font-medium text-gray-900">
-                          {
-                            user.name
-                          }
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-gray-900 text-sm truncate">
+                          {user.name}
                         </h3>
-
-                        <div className="flex items-center text-sm text-gray-500 mt-0.5">
-                          <Mail
-                            size={14}
-                            className="mr-1"
-                          />
-
-                          <span>
-                            {
-                              user.email
-                            }
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Mail size={12} className="text-gray-400" />
+                          <span className="text-xs text-gray-500 truncate">
+                            {user.email}
                           </span>
                         </div>
                       </div>
@@ -208,18 +234,33 @@ const AddMemberModal = ({
                         addingUserId ===
                         user._id
                       }
-                      className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm font-medium"
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex-shrink-0 ml-3 ${
+                        addingUserId === user._id
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md'
+                      }`}
                     >
-                      {addingUserId ===
-                      user._id
-                        ? 'Adding...'
-                        : 'Add'}
+                      {addingUserId === user._id ? (
+                        <span className="flex items-center gap-1">
+                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Adding...
+                        </span>
+                      ) : (
+                        'Add'
+                      )}
                     </button>
                   </div>
                 )
               )}
             </div>
           )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+          <p className="text-xs text-gray-500 text-center">
+            {users.length} member{users.length !== 1 ? 's' : ''} available to add
+          </p>
         </div>
       </div>
     </div>

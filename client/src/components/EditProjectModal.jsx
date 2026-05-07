@@ -27,7 +27,6 @@ const EditProjectModal = ({
   useEffect(() => {
     if (project) {
       setTitle(project.title || '');
-
       setDescription(
         project.description || ''
       );
@@ -118,60 +117,58 @@ const EditProjectModal = ({
       onClick={handleClose}
     >
       {/* Modal */}
-
       <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200"
         onClick={(e) =>
           e.stopPropagation()
         }
       >
         {/* Header */}
-
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-xl font-bold text-gray-900">
-            Edit Project
-          </h2>
+        <div className="flex justify-between items-center px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Edit Project
+            </h2>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Update your project details
+            </p>
+          </div>
 
           <button
             aria-label="Close modal"
             onClick={handleClose}
             disabled={loading}
-            className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all duration-200 disabled:opacity-50"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Form */}
-
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="p-6">
           {/* Title */}
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Project Title *
+          <div className="mb-5">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Project Title <span className="text-red-500">*</span>
             </label>
-
             <input
               type="text"
               value={title}
               onChange={(e) =>
                 setTitle(e.target.value)
               }
-              className="input"
-              placeholder="Enter project title"
+              className="w-full px-4 py-2.5 text-gray-900 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50 focus:bg-white"
+              placeholder="e.g., Mobile App Development"
               required
               disabled={loading}
             />
           </div>
 
           {/* Description */}
-
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description *
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description <span className="text-red-500">*</span>
             </label>
-
             <textarea
               value={description}
               onChange={(e) =>
@@ -179,22 +176,21 @@ const EditProjectModal = ({
                   e.target.value
                 )
               }
-              className="input resize-none"
+              className="w-full px-4 py-2.5 text-gray-900 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50 focus:bg-white resize-none"
               rows="4"
-              placeholder="Enter project description"
+              placeholder="Describe what this project is about..."
               required
               disabled={loading}
             />
           </div>
 
           {/* Actions */}
-
           <div className="flex gap-3">
             <button
               type="button"
               onClick={handleClose}
               disabled={loading}
-              className="flex-1 btn-secondary disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50"
             >
               Cancel
             </button>
@@ -202,7 +198,7 @@ const EditProjectModal = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 btn-primary disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading
                 ? 'Saving...'

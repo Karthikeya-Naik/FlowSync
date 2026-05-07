@@ -1,10 +1,5 @@
 import React from 'react';
-
-import {
-  NavLink,
-  useNavigate,
-} from 'react-router-dom';
-
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   FolderKanban,
@@ -12,119 +7,240 @@ import {
   LogOut,
   Users,
 } from 'lucide-react';
-
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const navigate = useNavigate();
-
   const { logout, user } = useAuth();
 
   const navItems = [
-    {
-      path: '/dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      path: '/projects',
-      label: 'Projects',
-      icon: FolderKanban,
-    },
-    {
-      path: '/tasks',
-      label: 'Tasks',
-      icon: CheckSquare,
-    },
-    { path: '/members', label: 'Members', icon: Users },
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/projects',  label: 'Projects',  icon: FolderKanban  },
+    { path: '/tasks',     label: 'Tasks',     icon: CheckSquare   },
+    { path: '/members',   label: 'Members',   icon: Users         },
   ];
 
   const handleLogout = () => {
     logout();
-
     navigate('/login');
   };
 
+  const initial = user?.name?.charAt(0)?.toUpperCase() || 'U';
+
   return (
-    <aside className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col">
-      {/* Logo */}
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
 
-      <div className="p-6 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-blue-600">
-          FlowSync
-        </h1>
+        .fs-sidebar {
+          width: 240px;
+          height: 100vh;
+          background: #fafaf8;
+          border-right: 1px solid #e8e6e0;
+          display: flex;
+          flex-direction: column;
+          font-family: 'DM Sans', sans-serif;
+          flex-shrink: 0;
+        }
 
-        <p className="text-xs text-gray-500 mt-1">
-          Team Task Manager
-        </p>
-      </div>
+        .fs-logo {
+          padding: 22px 20px 18px;
+          border-bottom: 1px solid #e8e6e0;
+        }
+        .fs-logo-wordmark {
+          font-family: 'Bricolage Grotesque', sans-serif;
+          font-size: 20px;
+          font-weight: 700;
+          color: #0f172a;
+          letter-spacing: -0.4px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .fs-logo-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #2563eb;
+          flex-shrink: 0;
+          margin-bottom: 1px;
+        }
+        .fs-logo-sub {
+          font-size: 11px;
+          font-weight: 400;
+          color: #94a3b8;
+          margin-top: 2px;
+          letter-spacing: 0.3px;
+        }
 
-      {/* User Info */}
+        .fs-user {
+          padding: 14px 16px;
+          margin: 12px 12px 4px;
+          border-radius: 12px;
+          background: #fff;
+          border: 1px solid #e8e6e0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .fs-avatar {
+          width: 34px;
+          height: 34px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+          font-weight: 700;
+          color: #2563eb;
+          flex-shrink: 0;
+        }
+        .fs-user-name {
+          font-size: 13px;
+          font-weight: 600;
+          color: #0f172a;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .fs-user-role {
+          font-size: 11px;
+          color: #94a3b8;
+          margin-top: 1px;
+        }
 
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-            <span className="text-blue-600 font-semibold">
-              {user?.name
-                ?.charAt(0)
-                ?.toUpperCase()}
-            </span>
+        .fs-nav {
+          flex: 1;
+          padding: 8px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow-y: auto;
+        }
+        .fs-nav-label {
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.8px;
+          color: #b0b8c4;
+          text-transform: uppercase;
+          padding: 8px 8px 4px;
+        }
+        .fs-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 12px;
+          border-radius: 10px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: #64748b;
+          text-decoration: none;
+          transition: background 0.15s, color 0.15s;
+        }
+        .fs-link:hover {
+          background: #f1f0eb;
+          color: #0f172a;
+        }
+        .fs-link.active {
+          background: #eff6ff;
+          color: #2563eb;
+          font-weight: 600;
+        }
+        .fs-link-icon {
+          color: #94a3b8;
+          flex-shrink: 0;
+          transition: color 0.15s;
+        }
+        .fs-link:hover .fs-link-icon {
+          color: #475569;
+        }
+        .fs-link.active .fs-link-icon {
+          color: #2563eb;
+        }
+
+        .fs-footer {
+          padding: 12px;
+          border-top: 1px solid #e8e6e0;
+        }
+        .fs-logout {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 9px 12px;
+          border-radius: 10px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: #94a3b8;
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition: background 0.15s, color 0.15s;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .fs-logout:hover {
+          background: #fff1f2;
+          color: #e11d48;
+        }
+        .fs-logout-icon {
+          color: #c4c9d4;
+          flex-shrink: 0;
+          transition: color 0.15s;
+        }
+        .fs-logout:hover .fs-logout-icon {
+          color: #e11d48;
+        }
+      `}</style>
+
+      <aside className="fs-sidebar">
+        {/* Logo */}
+        <div className="fs-logo">
+          <div className="fs-logo-wordmark">
+            <div className="fs-logo-dot" />
+            FlowSync
           </div>
+          <div className="fs-logo-sub">Team Task Manager</div>
+        </div>
 
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {user?.name}
-            </p>
-
-            <p className="text-xs text-gray-500">
-              {user?.role === 'admin'
-                ? 'Administrator'
-                : 'Team Member'}
-            </p>
+        {/* User chip */}
+        <div className="fs-user">
+          <div className="fs-avatar">{initial}</div>
+          <div style={{ minWidth: 0 }}>
+            <div className="fs-user-name">{user?.name || 'User'}</div>
+            <div className="fs-user-role">
+              {user?.role === 'admin' ? 'Administrator' : 'Team Member'}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Navigation */}
+        {/* Navigation */}
+        <nav className="fs-nav">
+          <div className="fs-nav-label">Menu</div>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => `fs-link${isActive ? ' active' : ''}`}
+              >
+                <Icon size={17} className="fs-link-icon" />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-600 font-medium shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`
-              }
-            >
-              <Icon size={20} />
-
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      {/* Logout */}
-
-      <div className="p-4 border-t border-gray-200">
-        <button
-          onClick={handleLogout}
-          aria-label="Logout"
-          className="flex items-center justify-center space-x-3 w-full px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200"
-        >
-          <LogOut size={20} />
-
-          <span>Logout</span>
-        </button>
-      </div>
-    </aside>
+        {/* Logout */}
+        <div className="fs-footer">
+          <button className="fs-logout" onClick={handleLogout} aria-label="Logout">
+            <LogOut size={17} className="fs-logout-icon" />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

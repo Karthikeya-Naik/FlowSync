@@ -7,6 +7,7 @@ import {
   Users,
   Search,
   Filter,
+  X,
 } from 'lucide-react';
 
 import {
@@ -197,7 +198,7 @@ const Members = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">
+        <div className="text-gray-500 text-lg">
           Loading members...
         </div>
       </div>
@@ -221,108 +222,83 @@ const Members = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="card">
+      {/* Filters Card */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
         <div className="flex flex-wrap gap-4 items-end">
           {/* Search */}
           <div className="flex-1 min-w-[220px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
               <Search
                 size={14}
                 className="inline mr-1"
               />
-
               Search
             </label>
 
             <input
               type="text"
-              value={
-                searchTerm
-              }
-              onChange={(
-                e
-              ) =>
-                setSearchTerm(
-                  e.target
-                    .value
-                )
+              value={searchTerm}
+              onChange={(e) =>
+                setSearchTerm(e.target.value)
               }
               placeholder="Search by name or email..."
-              className="input py-2"
+              className="w-full px-4 py-2 text-gray-900 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50 focus:bg-white"
             />
           </div>
 
           {/* Role */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="w-[180px]">
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
               <Filter
                 size={14}
                 className="inline mr-1"
               />
-
               Role
             </label>
 
             <select
-              value={
-                roleFilter
+              value={roleFilter}
+              onChange={(e) =>
+                setRoleFilter(e.target.value)
               }
-              onChange={(
-                e
-              ) =>
-                setRoleFilter(
-                  e.target
-                    .value
-                )
-              }
-              className="input py-2"
+              className="w-full px-4 py-2 text-gray-900 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50 focus:bg-white"
             >
               <option value="">
                 All Roles
               </option>
-
               <option value="admin">
                 Admin
               </option>
-
               <option value="member">
                 Member
               </option>
             </select>
           </div>
 
-          {/* Clear */}
-          {(searchTerm ||
-            roleFilter) && (
+          {/* Clear Filters */}
+          {(searchTerm || roleFilter) && (
             <button
-              onClick={
-                clearFilters
-              }
-              className="text-sm text-blue-600 hover:text-blue-700 mb-1"
+              onClick={clearFilters}
+              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium px-3 py-2 rounded-lg hover:bg-blue-50 transition-all duration-200"
             >
+              <X size={14} />
               Clear Filters
             </button>
           )}
         </div>
       </div>
 
-      {/* Members */}
-      {filteredMembers.length ===
-      0 ? (
-        <div className="card text-center py-12">
-          <Users
-            size={48}
-            className="mx-auto text-gray-400 mb-4"
-          />
-
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+      {/* Members Grid - Consistent height with h-full */}
+      {filteredMembers.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm text-center py-16">
+          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users size={40} className="text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No members found
           </h3>
-
           <p className="text-gray-500">
-            {searchTerm ||
-            roleFilter
+            {searchTerm || roleFilter
               ? 'Try adjusting your filters'
               : isAdmin
                 ? 'No users found'
@@ -331,33 +307,16 @@ const Members = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMembers.map(
-            (
-              member
-            ) => (
-              <MemberCard
-                key={
-                  member._id
-                }
-                user={
-                  member
-                }
-                isAdminView={
-                  isAdmin
-                }
-                isCurrentUser={
-                  member._id ===
-                  user?._id
-                }
-                onDelete={
-                  handleDeleteUser
-                }
-                onRoleChange={
-                  handleRoleChange
-                }
-              />
-            )
-          )}
+          {filteredMembers.map((member) => (
+            <MemberCard
+              key={member._id}
+              user={member}
+              isAdminView={isAdmin}
+              isCurrentUser={member._id === user?._id}
+              onDelete={handleDeleteUser}
+              onRoleChange={handleRoleChange}
+            />
+          ))}
         </div>
       )}
     </div>
